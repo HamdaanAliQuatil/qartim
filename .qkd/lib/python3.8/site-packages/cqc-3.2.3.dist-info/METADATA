@@ -1,0 +1,29 @@
+Metadata-Version: 2.1
+Name: cqc
+Version: 3.2.3
+Summary: The CQC interface
+Home-page: https://github.com/SoftwareQuTech/CQC-Python
+Author: Axel Dahlberg
+Author-email: e.a.dahlberg@tudelft.nl
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+Requires-Dist: numpy (<2.0.0,>=1.14.0)
+Requires-Dist: bitstring (<4.0.0,>=3.1.5)
+Requires-Dist: twisted (<21.0.0,>=20.3.0)
+Requires-Dist: anytree (<3.0.0,>=2.7.2)
+
+# CQC (3.2.3)
+
+The classical-quantum combiner (CQC) interface is an interface between higher layers and hardware in a Quantum Internet. It comes with a Python, C and Rust library for constructing CQC messages. The Python library is definitely the best place to get started.
+
+Documentation of CQC can be found at https://softwarequtech.github.io/CQC-Python/
+
+The CQC can be used to either program hardware which supports the interface or the simulator [https://github.com/SoftwareQuTech/SimulaQron](SimulaQron).
+
+More information about CQC can also be found in the paper on SimulaQron at https://arxiv.org/abs/1712.08032
+
+
