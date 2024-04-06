@@ -66,9 +66,8 @@ def initiate_keygen(
         for q in qubits:
             conn.sendQubit(q, recipient)
         q_logger("sent qubits!")
-
         # receive bases used by Bob
-        bobs_bases = BitVector(bitlist=conn.recvClassical())
+        bobs_bases = BitVector(intVal=int.from_bytes(conn.recvClassical(), byteorder='big'))
         q_logger("Bobs bases:    {}".format(bin(bobs_bases.int_val())))
         correct_bases = ~bobs_bases ^ bases
         correctness = correct_bases.count_bits() / length
@@ -124,6 +123,7 @@ def target_keygen(name="Bob", initiator="Alice", q_logger=print):
         q_logger("Recieved qubits!")
 
         key, bases = measure_random(qubits)
+        print(type(key))
         q_logger("Key:     {}".format(bin(key)))
         q_logger("Bases:   {}".format(bin(bases.int_val())))
 
@@ -132,7 +132,7 @@ def target_keygen(name="Bob", initiator="Alice", q_logger=print):
         # Use slice to extract list from bitvector
         conn.sendClassical(initiator, bases[:])
 
-        correct_bases = BitVector(bitlist=conn.recvClassical())
+        correct_bases = BitVector(intVal=int.from_bytes(conn.recvClassical(), byteorder='big'))
         q_logger("Correct: {}".format(bin(int(correct_bases))))
 
         # Remove all incorrectly measured bits
@@ -142,16 +142,16 @@ def target_keygen(name="Bob", initiator="Alice", q_logger=print):
         verification_bits, key = break_into_parts(key, key_length)
         conn.sendClassical(initiator, verification_bits[:])
 
-        response = conn.recvClassical()
+        response = int.from_bytes(conn.recvClassical(), byteorder='big')
 
         if response == OK:
             q_logger("Key OK to use")
-            conn.sendClassical(initiator, OK)
+            conn.sendClassical(initiator, OK.to_bytes(2, 'big'))
             pass
         elif response == TAMPERED:
             q_logger("Key compromised!")
             pass
-        conn.sendClassical(initiator, OK)
+        conn.sendClassical(initiator, OK.to_bytes(2, 'big'))
 
         return key
 
@@ -302,9 +302,10 @@ def measure_hadamard(encoded_num):
     return int(decoded_num), bases
 
 
-def truncate_key(key, length, correct_bases):
+def truncate_key(key:int, length, correct_bases):
     key_bit_vect = BitVector(intVal=key, size=length)
     truncated_key = [key_bit_vect[i] for i in range(length) if correct_bases[i]==1]
+    print(truncate_key)
     return BitVector(bitlist=truncated_key)
 
 
@@ -375,7 +376,7 @@ def decrypt(enc, key):
 
 
 def test():
-    with get_CQCConnection("Alice") as Alice:
+    with CQCConnection("Alice") as Alice:
         key = random.randint(0, pow(2, 8) - 1)
         print("Key:    {}".format(key))
         encoded, bases = encode_random(Alice, key, 8)
@@ -383,5 +384,3 @@ def test():
         print("Basis': {}".format(hex(int(bases))))
         print("Result: {}".format(hex(decoded)))
         print("Correct: {}".format(key == decoded))
-
-test()
