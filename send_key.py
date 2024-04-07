@@ -14,4 +14,7 @@ BACKEND = AerSimulator(method='stabilizer')
 # Initilisation of the key
 key = initiate_keygen()
 
+# save the key to a file
+with open('key.txt', 'w') as file:
+    file.write(key)
 

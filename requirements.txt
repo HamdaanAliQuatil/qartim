@@ -1,8 +1,7 @@
-absl-py==0.1.10
+absl-py>=0.1.10
 anytree==2.12.1
 attrs==23.2.0
 Automat==22.10.0
-bb84==1.0
 bitstring==3.1.9
 BitVector==3.5.0
 click==7.1.2
@@ -35,6 +34,5 @@ six==1.16.0
 stevedore==5.2.0
 symengine==0.11.0
 sympy==1.12
-Twisted==20.3.0
 typing-extensions==4.11.0
 zope.interface==6.2
