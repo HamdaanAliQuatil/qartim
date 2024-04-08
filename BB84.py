@@ -9,8 +9,7 @@ import random
 from cqc.pythonLib import CQCConnection, qubit, CQCNoQubitError
 
 """
-BB84 protocol simulator
-author: Andrew H. Thorp andrew.thorp.dev@gmail.com
+BB84 PROTOCOL DESICRIPTION
 
 Protocol:
     1.  Alice and Bob connect via quantum network simulator (simulaqron)
@@ -39,13 +38,13 @@ ERROR = 20
 TAMPERED = 80
 
 ###################
-# Opperations
+# Operations
 ###################
 def initiate_keygen(
     key_size=32, name="Alice", recipient="Bob", acceptable_error=0.5, q_logger=print
 ):
     length = 3 * key_size
-    q_logger("Begginning key initialization with {}".format(recipient))
+    q_logger("Beginning key initialization with {}".format(recipient))
     with get_CQCConnection(name) as conn:
         q_logger("init Connection made")
 
