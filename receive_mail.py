@@ -1,10 +1,10 @@
 import socket
 import sys
-import binascii
 
-def calculate_crc(data):
-    crc = binascii.crc32(data.encode())
-    return crc & 0xFFFFFFFF
+def encrypt_decrypt(message, key):
+    key = key * (len(message) // len(key)) + key[:len(message) % len(key)]
+    encrypted_message = ''.join(chr(ord(message_char) ^ ord(key_char)) for message_char, key_char in zip(message, key))
+    return encrypted_message
 
 def main():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,14 +12,23 @@ def main():
     port = 8000
     client_socket.connect((host, port))
     print(f"Connected to server at {host}:{port}")
+
+    with open('key.txt', 'r') as file:
+        KEY_SEQUENCE = file.read()
+
     while True:
         message = input("Enter a string or 'Quit' to exit: ")
-        crc = calculate_crc(message)
-        message = f"{message} {crc}"
-        client_socket.send(message.encode())
-        if message.split()[0].lower() == 'quit':
+        
+        if message.lower() == 'quit':
             print("Exiting client.")
-        sys.exit(0)
+            client_socket.send(message.encode())
+            sys.exit(0)
+
+        encrypted_message = encrypt_decrypt(message, KEY_SEQUENCE)
+        message_to_send = f"{encrypted_message} {KEY_SEQUENCE}"
+        
+        client_socket.send(message_to_send.encode())
+        
         result = client_socket.recv(1024).decode()
         print(f"Server response: {result}")
 

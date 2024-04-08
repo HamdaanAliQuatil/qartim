@@ -5,16 +5,7 @@ from email.mime.multipart import MIMEMultipart
 import random
 import string
 
-# read key from file key.txt
-with open('key.txt', 'r') as file:
-    KEY_SEQUENCE = file.read()
-
-def encrypt_decrypt(message, key):
-    key = key * (len(message) // len(key)) + key[:len(message) % len(key)]
-    encrypted_message = ''.join(chr(ord(message_char) ^ ord(key_char)) for message_char, key_char in zip(message, key))
-    return encrypted_message
-
-# def send_email(subject, message, to_email):
+#  def send_email(subject, message, to_email):
 #     from_email = 
 #     password = 
     
@@ -73,24 +64,21 @@ def encrypt_decrypt(message, key):
     # server.logout()
 
 # Send email from Alice to Bob
-subject = 'Hello Bob'
-message = 'This is a secret message from Alice to Bob'
-to_email = 'b4713964@gmail.com'
-send_email(subject, message, to_email)
+# subject = 'Hello Bob'
+# message = 'This is a secret message from Alice to Bob'
+# to_email = 'b4713964@gmail.com'
+# send_email(subject, message, to_email)
 
 # Receive email for Bob
-receive_email()
+# receive_email()
 
 import socket
 import sys
-import binascii
-def calculate_crc(data):
-    # crc32 uses x32 + x22 + x17 + x15 + x13 + x11 + x10 + x8 + x7 + x5 +
-    crc = binascii.crc32(data.encode())
-    return crc & 0xFFFFFFFF
 
-def check_crc(data, crc):
-    return calculate_crc(data) == crc
+def encrypt_decrypt(message, key):
+    key = key * (len(message) // len(key)) + key[:len(message) % len(key)]
+    encrypted_message = ''.join(chr(ord(message_char) ^ ord(key_char)) for message_char, key_char in zip(message, key))
+    return encrypted_message
 
 def main():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -99,27 +87,29 @@ def main():
     server_socket.bind((host, port))
     server_socket.listen(1)
     print(f"Server listening on {host}:{port}")
+    
+    with open('key.txt', 'r') as file:
+        KEY_SEQUENCE = file.read()
+
     while True:
         client_socket, client_addr = server_socket.accept()
         print(f"Connection from {client_addr}")
+        
         while True:
             data = client_socket.recv(1024).decode()
-            message, crc = data.split()
+            message, key = data.split()
+            
             if message.lower() == 'quit':
                 print("Client requested to quit. Closing connection.")
                 sys.exit(0)
-
+            
             else:
                 print(f"Received message: {message}")
-                print(f"Received CRC: {crc}")
-                crc_result = calculate_crc(message)
-                if check_crc(message, int(crc)):
-                    crc_result = "Pass"
-                else:
-                    crc_result = "Fail"
-                    print(f"CRC check: {crc_result}")
-                    response = f"CRC check: {crc_result}"
-                    client_socket.send(response.encode())
+                decrypted_message = encrypt_decrypt(message, KEY_SEQUENCE)
+                print(f"Decrypted data: {decrypted_message}")
+                response = f"OTP decrypted message: {decrypted_message}"
+                client_socket.send(response.encode())
+                
     client_socket.close()
 
 if __name__ == "__main__":  
